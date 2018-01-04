@@ -14,10 +14,10 @@ This version of the visualizer app uses
 # Tasks
 
 * [x] correct labels at charts (depending on the number of values)
-* [ ] self host necessary resources
+* [x] self host necessary resources
 * [ ] configurable from the outside
 * [ ] auto update the values
-* [ ] auto update the graphs
+* [x] auto update the graphs
 * [ ] show timestamps for values
 * [ ] clean up the user interface
 * [ ] select ranges for the charts

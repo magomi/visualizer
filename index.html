@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
 
     <title>visualizer</title>
     <link rel="stylesheet" href="css/chartist.min.css">
@@ -14,14 +14,13 @@
         .ct-chart .ct-line {
             stroke: orange;
         }
-        .ct-label {
+        .ct-label.ct-horizontal {
             margin-left: -20px;
         }
     </style>
     <script>
 
-var graphs = ["speicher", "vorlauf", "ruecklauf", "therme"]
-var values = ['speicher', 'vorlauf', 'ruecklauf', 'therme'];
+var sources = ["speicher", "vorlauf", "ruecklauf", "therme"]
 
 var graphOptions = {
     showPoint: false,
@@ -32,7 +31,7 @@ var graphMap = new Object();
 
 function updateGraphs(interval) {
     // iterate over the graph objects
-    graphs.forEach(function(graph, index) {
+    sources.forEach(function(graph, index) {
         // get new data from server
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.open("GET", '/data/query?db=heizung;q=SELECT \"value\" FROM \"' + graph + '\" where time > now() - ' + interval + ' order by time desc tz(\'Europe/Berlin\')', false);
@@ -42,9 +41,8 @@ function updateGraphs(interval) {
         var l = [];
         
         var itemCnt = tsData.results[0].series[0].values.length;
-	console.log(itemCnt);
-
-	tsData.results[0].series[0].values.reverse().forEach(function(item, idx) {
+        
+        tsData.results[0].series[0].values.reverse().forEach(function(item, idx) {
             s[idx] = item[1];
             timestamp = new Date(item[0]);
             if ((0 == (idx % Math.round(itemCnt/10))) || (itemCnt == (idx + 1))) {
@@ -53,7 +51,7 @@ function updateGraphs(interval) {
                     '0' + timestamp.getMinutes()
                 ].map(component => component.slice(-2));
 		        d = [
-		            '0' + timestamp.getDay(),
+		            '0' + timestamp.getDate(),
 		            '0' + (timestamp.getMonth() + 1),
                     '0' + timestamp.getYear()
 		        ].map(component => component.slice(-2));
@@ -79,7 +77,7 @@ function updateGraphs(interval) {
 }
 
 function showValues() {
-    values.forEach(function(item, index) {
+    sources.forEach(function(item, index) {
         var xmlHttp = new XMLHttpRequest();
 xmlHttp.open( "GET", '/data/query?db=heizung;q=SELECT \"value\" FROM \"' + item + '\" order by time desc limit 1 tz(\'Europe/Berlin\')', false );
         xmlHttp.send( null );
@@ -106,6 +104,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // get and show data
     updateGraphs('3h');
     showValues();
+    window.setInterval(function() {
+        // get selected button
+        range = $('.sel-range').find('.btn-primary').text().replace(' ', '');
+        updateGraphs(range);
+    }, 60000);
 })
 
         </script>
@@ -152,9 +155,8 @@ document.addEventListener('DOMContentLoaded', function() {
             <h3>Therme</h3>
             <div class="border ct-chart ct-double-octave" id="chart-therme"></div>
         </div>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+    <script src="js/jquery-3.2.1.slim.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
   </body>
 
 </html>
