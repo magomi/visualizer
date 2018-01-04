@@ -16,7 +16,7 @@ This version of the visualizer app uses
 * [x] correct labels at charts (depending on the number of values)
 * [x] self host necessary resources
 * [ ] configurable from the outside
-* [ ] auto update the values
+* [x] auto update the values
 * [x] auto update the graphs
 * [ ] show timestamps for values
 * [ ] clean up the user interface

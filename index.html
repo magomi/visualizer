@@ -76,7 +76,7 @@ function updateGraphs(interval) {
 
 }
 
-function showValues() {
+function updateValues() {
     sources.forEach(function(item, index) {
         var xmlHttp = new XMLHttpRequest();
 xmlHttp.open( "GET", '/data/query?db=heizung;q=SELECT \"value\" FROM \"' + item + '\" order by time desc limit 1 tz(\'Europe/Berlin\')', false );
@@ -103,9 +103,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // get and show data
     updateGraphs('3h');
-    showValues();
+    updateValues();
+ 
+    // automatically update data at interval
     window.setInterval(function() {
-        // get selected button
+        // update the values
+        updateValues();
+
+        // update the graphs
         range = $('.sel-range').find('.btn-primary').text().replace(' ', '');
         updateGraphs(range);
     }, 60000);
