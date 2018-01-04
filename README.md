@@ -18,7 +18,7 @@ This version of the visualizer app uses
 * [ ] configurable from the outside
 * [x] auto update the values
 * [x] auto update the graphs
-* [ ] show timestamps for values
+* [x] show timestamps for values
 * [ ] clean up the user interface
 * [ ] select ranges for the charts
 * [ ] authentication
@@ -30,7 +30,7 @@ This list stores all resources that I visited to do the implementation. A lot of
 * move in #vi #insert mode: https://stackoverflow.com/questions/19204396/jump-to-the-next-word-in-insert-mode
 * check for an #undefined var in #javascript: https://stackoverflow.com/questions/3390396/how-to-check-for-undefined-in-javascript
 * #maps in #javascript: https://stackoverflow.com/questions/4246980/how-to-create-a-simple-map-using-javascript-jquery
-* handling #javascript #date: http://blog.stevenlevithan.com/archives/date-time-format (not necessary in the app anymore)
+* handling #javascript #date: http://blog.stevenlevithan.com/archives/date-time-format
 * update a #chartist graph: https://github.com/gionkunz/chartist-js/issues/321
 * #functions in #javascript: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions
 * #date in #javascript: https://www.w3schools.com/js/js_date_formats.asp

@@ -83,8 +83,9 @@ xmlHttp.open( "GET", '/data/query?db=heizung;q=SELECT \"value\" FROM \"' + item 
         xmlHttp.send( null );
         var data = JSON.parse(xmlHttp.responseText);
         var value = data.results[0].series[0].values[0][1];
-    
-	$('#value-' + item).html(value);
+        var timestamp = data.results[0].series[0].values[0][0];
+        $('#value-' + item).html(value);
+        $('#timestamp-' + item).html((new Date(timestamp)).format('dd.mm.yy HH:MM'));
     });
 }
 
@@ -125,19 +126,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 <tbody>
                     <tr>
                         <td>Speicher</td>
-                        <td><span id="value-speicher">12</span><span> &deg;C</span></td>
+                        <td>
+                            <span id="value-speicher">12</span>
+                            <span> &deg;C (</span><span id="timestamp-speicher"></span><span>)</span>
+                        </td>
                     </tr>
                     <tr>
                         <td>Vorlauf</td>
-                        <td><span id="value-vorlauf">12</span><span> &deg;C</span></td>
+                        <td>
+                            <span id="value-vorlauf">12</span>
+                            <span> &deg;C (</span><span id="timestamp-vorlauf"></span><span>)</span>
+                        </td>
                     </tr>
                     <tr>
                         <td>Rücklauf</td>
-                        <td><span id="value-ruecklauf">12</span><span> &deg;C</span></td>
+                        <td>
+                            <span id="value-ruecklauf">12</span>
+                            <span> &deg;C (</span><span id="timestamp-ruecklauf"></span><span>)</span>
+                        </td>
                     </tr>
                     <tr>
                         <td>Therme</td>
-                        <td><span id="value-therme">0</span></td>
+                        <td>
+                            <span id="value-therme">0</span>
+                            <span> (</span><span id="timestamp-therme"></span><span>)</span>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -162,12 +175,8 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     <script src="js/jquery-3.2.1.slim.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/date.format.js"></script>
   </body>
 
 </html>
-
-
-
-
-
 
