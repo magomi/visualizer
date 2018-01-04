@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+
+    <title>visualizer</title>
+    <link rel="stylesheet" href="css/chartist.min.css">
+    <script src="js/chartist.min.js"></script>
+   
+    <style>
+        .ct-chart .ct-line {
+            stroke: orange;
+        }
+        .ct-label {
+            margin-left: -20px;
+        }
+    </style>
+    <script>
+
+var graphs = ["speicher", "vorlauf", "ruecklauf", "therme"]
+var values = ['speicher', 'vorlauf', 'ruecklauf', 'therme'];
+
+var graphOptions = {
+    showPoint: false,
+    lineSmooth: false
+};
+
+var graphMap = new Object();
+
+function updateGraphs(interval) {
+    // iterate over the graph objects
+    graphs.forEach(function(graph, index) {
+        // get new data from server
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open("GET", '/data/query?db=heizung;q=SELECT \"value\" FROM \"' + graph + '\" where time > now() - ' + interval + ' order by time desc tz(\'Europe/Berlin\')', false);
+        xmlHttp.send( null );
+        var tsData = JSON.parse(xmlHttp.responseText);
+        var s = [];
+        var l = [];
+        
+        var itemCnt = tsData.results[0].series[0].values.length;
+	console.log(itemCnt);
+
+	tsData.results[0].series[0].values.reverse().forEach(function(item, idx) {
+            s[idx] = item[1];
+            timestamp = new Date(item[0]);
+            if ((0 == (idx % Math.round(itemCnt/10))) || (itemCnt == (idx + 1))) {
+                t = [
+                    '0' + timestamp.getHours(),
+                    '0' + timestamp.getMinutes()
+                ].map(component => component.slice(-2));
+		        d = [
+		            '0' + timestamp.getDay(),
+		            '0' + (timestamp.getMonth() + 1),
+                    '0' + timestamp.getYear()
+		        ].map(component => component.slice(-2));
+		        l[idx] = t.slice().join(':') + "\n" + d.slice().join('.');
+            }
+        });
+    
+        var data = {
+            lineSmooth: Chartist.Interpolation.step(),
+            labels: l,
+            series: [ s ]
+        };
+
+        // create or update chart
+        if (graphMap[graph] === undefined) {
+            graphMap[graph] = new Chartist.Line('#chart-' + graph, data, graphOptions);
+        } else {
+            graphMap[graph].data = data;
+            graphMap[graph].update();
+        }
+    });
+
+}
+
+function showValues() {
+    values.forEach(function(item, index) {
+        var xmlHttp = new XMLHttpRequest();
+xmlHttp.open( "GET", '/data/query?db=heizung;q=SELECT \"value\" FROM \"' + item + '\" order by time desc limit 1 tz(\'Europe/Berlin\')', false );
+        xmlHttp.send( null );
+        var data = JSON.parse(xmlHttp.responseText);
+        var value = data.results[0].series[0].values[0][1];
+    
+	$('#value-' + item).html(value);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // add a onClick function to every range button
+    $('.sel-range').find('.btn').click(function() {
+        // get the 'value' of the button and trigger graph update
+        cnt = $(this).html().split(' ')[0];
+        unit = $(this).html().split(' ')[1];
+        updateGraphs(cnt + unit);
+
+        // re-assign the marker (btn-primary) to the clicked button
+        $('.sel-range').find('.btn').removeClass("btn-primary");
+        $(this).addClass("btn-primary");
+    });
+    
+    // get and show data
+    updateGraphs('3h');
+    showValues();
+})
+
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <h2>Aktuelle Werte</h2>
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <td>Speicher</td>
+                        <td><span id="value-speicher">12</span><span> &deg;C</span></td>
+                    </tr>
+                    <tr>
+                        <td>Vorlauf</td>
+                        <td><span id="value-vorlauf">12</span><span> &deg;C</span></td>
+                    </tr>
+                    <tr>
+                        <td>Rücklauf</td>
+                        <td><span id="value-ruecklauf">12</span><span> &deg;C</span></td>
+                    </tr>
+                    <tr>
+                        <td>Therme</td>
+                        <td><span id="value-therme">0</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <h2>Verlauf<h2>
+                <div class="btn-group sel-range" role="group" aria-label="Zeitraum">
+                    <button type="button" class="btn" id="sel-1h">1 h</button>
+                    <button type="button" class="btn btn-primary" id="sel-3h">3 h</button>
+                    <button type="button" class="btn" id="sel-6h">6 h</button>
+                    <button type="button" class="btn" id="sel-1d">1 d</button>
+                    <button type="button" class="btn" id="sel-2d">2 d</button>
+                    <button type="button" class="btn" id="sel-4d">4 d</button>
+                    <button type="button" class="btn" id="sel-1w">1 w</button>
+                </div>
+            <h3>Speicher<h3>
+            <div class="border ct-chart ct-double-octave" id="chart-speicher"></div>
+            <h3>Vorlauf</h3>
+            <div class="border ct-chart ct-double-octave" id="chart-vorlauf"></div>
+            <h3>Rücklauf</h3>
+            <div class="border ct-chart ct-double-octave" id="chart-ruecklauf"></div>
+            <h3>Therme</h3>
+            <div class="border ct-chart ct-double-octave" id="chart-therme"></div>
+        </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+  </body>
+
+</html>
+
+
+
+
+
+
