@@ -44,7 +44,7 @@ function updateGraphs(interval) {
     sources.forEach(function(graph, index) {
         // get new data from server
         var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open("GET", '/data/query?db=heizung;q=SELECT \"value\" FROM \"' + graph + '\" where time > now() - ' + interval + ' order by time desc tz(\'Europe/Berlin\')', false);
+        xmlHttp.open("GET", 'data/query?db=heizung;q=SELECT \"value\" FROM \"' + graph + '\" where time > now() - ' + interval + ' order by time desc tz(\'Europe/Berlin\')', false);
         xmlHttp.send( null );
         var tsData = JSON.parse(xmlHttp.responseText);
         var s = [];
@@ -92,7 +92,7 @@ function updateGraphs(interval) {
 function updateValues() {
     sources.forEach(function(item, index) {
         var xmlHttp = new XMLHttpRequest();
-xmlHttp.open( "GET", '/data/query?db=heizung;q=SELECT \"value\" FROM \"' + item + '\" order by time desc limit 1 tz(\'Europe/Berlin\')', false );
+xmlHttp.open( "GET", 'data/query?db=heizung;q=SELECT \"value\" FROM \"' + item + '\" order by time desc limit 1 tz(\'Europe/Berlin\')', false );
         xmlHttp.send( null );
         var data = JSON.parse(xmlHttp.responseText);
         var value = data.results[0].series[0].values[0][1];
