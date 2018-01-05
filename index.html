@@ -8,7 +8,9 @@
 
     <title>visualizer</title>
     <link rel="stylesheet" href="css/chartist.min.css">
+    <link rel="stylesheet" href="css/chartist-plugin-tooltip.css">
     <script src="js/chartist.min.js"></script>
+    <script src="js/chartist-plugin-tooltip.js"></script>
    
     <style>
         .ct-chart .ct-line {
@@ -23,8 +25,16 @@
 var sources = ["speicher", "vorlauf", "ruecklauf", "therme"]
 
 var graphOptions = {
-    showPoint: false,
-    lineSmooth: false
+    showPoint: true,
+    lineSmooth: false,
+    plugins: [
+        Chartist.plugins.tooltip({
+            tooltipFnc: function(timestamp, value) {
+                return (new Date(timestamp)).format('dd.mm.yy HH:MM') + "<br>" + value + " &deg;C";
+            },
+
+        }),
+    ]
 };
 
 var graphMap = new Object();
@@ -43,7 +53,10 @@ function updateGraphs(interval) {
         var itemCnt = tsData.results[0].series[0].values.length;
         
         tsData.results[0].series[0].values.reverse().forEach(function(item, idx) {
-            s[idx] = item[1];
+            data = new Object();
+            data['value'] = item[1];
+            data['meta'] = item[0];
+            s[idx] = data;
             timestamp = new Date(item[0]);
             if ((0 == (idx % Math.round(itemCnt/10))) || (itemCnt == (idx + 1))) {
                 t = [

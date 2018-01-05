@@ -19,6 +19,7 @@ This version of the visualizer app uses
 * [x] auto update the values
 * [x] auto update the graphs
 * [x] show timestamps for values
+* [x] show detailed tooltips for the graphs
 * [ ] clean up the user interface
 * [ ] select ranges for the charts
 * [ ] authentication
