@@ -10,6 +10,27 @@ This version of the visualizer app uses
 * jquery for dynamic html
 * vanilla ajax for retrieving data
   * TODO/FIXME: "[Deprecation] Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/."
+ 
+# Deployment
+
+## Mapping the database url
+
+One of the main constraint is that the data must be load from a sub url (data)  of the apps base url. This can be done by defining a proxy for the sub url.
+
+Below is a sample config for nginx.
+
+    location /data/ {
+        proxy_pass http://<INFLUX-DB-SERVER>/;
+    }
+
+## Authentication
+
+For simplest authentication the methods already provided by the webserver shall be used. A nginx sample configuration can is provided below.
+
+    auth_basic "Visualizer";                                   
+    auth_basic_user_file <PATH-DO-USERS-FILE>;
+
+The users file can be created using the apache htpasswd utility.
 
 # Tasks
 
@@ -22,7 +43,7 @@ This version of the visualizer app uses
 * [x] show detailed tooltips for the graphs
 * [ ] clean up the user interface
 * [ ] select ranges for the charts
-* [ ] authentication
+* [x] basic authentication
 
 # Useful resources
 
@@ -43,4 +64,5 @@ This list stores all resources that I visited to do the implementation. A lot of
 * #javascript #math #round: https://www.w3schools.com/jsref/jsref_round.asp
 * #vi configuration: http://www.peachpit.com/articles/article.aspx?p=31442&seqNum=7
 * #nginx server config: https://www.nginx.com/resources/wiki/start/topics/examples/server_blocks/
-*
+* #nginx #authorization: https://www.nginx.com/resources/admin-guide/restricting-access-auth-basic/
+* #nginx restart #osx: https://serverfault.com/questions/225948/how-to-restart-nginx-on-mac-os-x
