@@ -13,8 +13,9 @@
     <script src="js/chartist-plugin-tooltip.js"></script>
    
     <style>
-        .ct-chart .ct-line {
-            stroke: orange;
+        .ct-chart .ct-line {    
+            stroke: red;
+            stroke-width: 2px;             
         }
         .ct-label.ct-horizontal {
             margin-left: -20px;
@@ -32,7 +33,6 @@ var graphOptions = {
             tooltipFnc: function(timestamp, value) {
                 return (new Date(timestamp)).format('dd.mm.yy HH:MM') + "<br>" + value + " &deg;C";
             },
-
         }),
     ]
 };
@@ -81,6 +81,21 @@ function updateGraphs(interval) {
         // create or update chart
         if (graphMap[graph] === undefined) {
             graphMap[graph] = new Chartist.Line('#chart-' + graph, data, graphOptions);
+            // FIXME: custom data point drawing clashes with the tooltip display
+            //        may help: https://github.com/tmmdata/chartist-plugin-tooltip/issues/122
+            graphMap[graph].on('draw', function(data) {
+                if(data.type === 'point') {
+                    var circle = new Chartist.Svg('circle', {
+                        cx: [data.x],
+                        cy: [data.y],
+                        r: [3],
+                        'ct:value': data.value.y,
+                        'ct:meta': data.meta,
+                        style: 'fill-opacity: 1'
+                    }, 'ct-area');
+                    data.element.replace(circle);
+                }
+            });
         } else {
             graphMap[graph].data = data;
             graphMap[graph].update();
